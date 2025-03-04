@@ -19,6 +19,21 @@ class UserDocument(NoSQLBaseDocument):
         return f"{self.first_name} {self.last_name}"
 
 
+class PaperDocument(NoSQLBaseDocument, ABC):
+    title: str
+    release_date: str
+    content: str
+    link: str
+
+    class Settings:
+        name = DataCategory.PAPERS
+
+
+class ArxivPaperDocument(PaperDocument):
+    categories: list[str]
+    journal: Optional[str]
+
+
 class Document(NoSQLBaseDocument, ABC):
     content: dict
     platform: str
