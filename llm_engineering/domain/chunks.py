@@ -11,8 +11,8 @@ class Chunk(VectorBaseDocument, ABC):
     content: str
     platform: str
     document_id: UUID4
-    author_id: UUID4
-    author_full_name: str
+    requester_id: UUID4
+    requester_full_name: str
     metadata: dict = Field(default_factory=dict)
 
 
@@ -36,3 +36,11 @@ class RepositoryChunk(Chunk):
 
     class Config:
         category = DataCategory.REPOSITORIES
+
+
+class PaperChunk(Chunk):
+    title: str
+    link: str
+
+    class Config:
+        category = DataCategory.PAPERS

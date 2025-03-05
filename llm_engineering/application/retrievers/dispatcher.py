@@ -25,7 +25,7 @@ class RetrieverDispatcher:
         self._retrievers[source] = retriever
 
     def get_retriever(self, source: str) -> BaseRetriever:
-        for name, retriever in self._crawlers.items():
+        for name, retriever in self._retrievers.items():
             if re.match(source, name):
                 return retriever()
         else:

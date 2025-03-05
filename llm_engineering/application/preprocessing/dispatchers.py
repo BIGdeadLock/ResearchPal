@@ -6,18 +6,21 @@ from llm_engineering.domain.types import DataCategory
 from .chunking_data_handlers import (
     ArticleChunkingHandler,
     ChunkingDataHandler,
+    PapersChunkingHandler,
     PostChunkingHandler,
     RepositoryChunkingHandler,
 )
 from .cleaning_data_handlers import (
     ArticleCleaningHandler,
     CleaningDataHandler,
+    PapersCleaningHandler,
     PostCleaningHandler,
     RepositoryCleaningHandler,
 )
 from .embedding_data_handlers import (
     ArticleEmbeddingHandler,
     EmbeddingDataHandler,
+    PapersEmbeddingHandler,
     PostEmbeddingHandler,
     QueryEmbeddingHandler,
     RepositoryEmbeddingHandler,
@@ -33,6 +36,8 @@ class CleaningHandlerFactory:
             return ArticleCleaningHandler()
         elif data_category == DataCategory.REPOSITORIES:
             return RepositoryCleaningHandler()
+        elif data_category == DataCategory.PAPERS:
+            return PapersCleaningHandler()
         else:
             raise ValueError("Unsupported data type")
 
@@ -64,6 +69,8 @@ class ChunkingHandlerFactory:
             return ArticleChunkingHandler()
         elif data_category == DataCategory.REPOSITORIES:
             return RepositoryChunkingHandler()
+        elif data_category == DataCategory.PAPERS:
+            return PapersChunkingHandler()
         else:
             raise ValueError("Unsupported data type")
 
@@ -97,6 +104,8 @@ class EmbeddingHandlerFactory:
             return ArticleEmbeddingHandler()
         elif data_category == DataCategory.REPOSITORIES:
             return RepositoryEmbeddingHandler()
+        elif data_category == DataCategory.PAPERS:
+            return PapersEmbeddingHandler()
         else:
             raise ValueError("Unsupported data type")
 

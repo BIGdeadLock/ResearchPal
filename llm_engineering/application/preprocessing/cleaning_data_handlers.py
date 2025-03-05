@@ -2,17 +2,13 @@ from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
 from llm_engineering.domain.cleaned_documents import (
+    CleanPaperDocument,
     CleanedArticleDocument,
     CleanedDocument,
     CleanedPostDocument,
     CleanedRepositoryDocument,
 )
-from llm_engineering.domain.documents import (
-    ArticleDocument,
-    Document,
-    PostDocument,
-    RepositoryDocument,
-)
+from llm_engineering.domain.documents import ArticleDocument, Document, PaperDocument, PostDocument, RepositoryDocument
 
 from .operations import clean_text
 
@@ -67,4 +63,18 @@ class RepositoryCleaningHandler(CleaningDataHandler):
             link=data_model.link,
             author_id=data_model.author_id,
             author_full_name=data_model.author_full_name,
+        )
+
+
+class PapersCleaningHandler(CleaningDataHandler):
+    def clean(self, data_model: PaperDocument) -> CleanPaperDocument:
+        return CleanPaperDocument(
+            id=data_model.id,
+            content=data_model.content,
+            platform=data_model.platform,
+            title=data_model.title,
+            link=data_model.link,
+            release_date=data_model.release_date,
+            requester_id=data_model.requester_id,
+            requester_full_name=data_model.requester_full_name,
         )

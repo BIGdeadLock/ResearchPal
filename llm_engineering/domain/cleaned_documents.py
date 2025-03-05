@@ -10,8 +10,8 @@ from .types import DataCategory
 class CleanedDocument(VectorBaseDocument, ABC):
     content: str
     platform: str
-    author_id: UUID4
-    author_full_name: str
+    requester_id: UUID4
+    requester_full_name: str
 
 
 class CleanedPostDocument(CleanedDocument):
@@ -39,4 +39,15 @@ class CleanedRepositoryDocument(CleanedDocument):
     class Config:
         name = "cleaned_repositories"
         category = DataCategory.REPOSITORIES
+        use_vector_index = False
+
+
+class CleanPaperDocument(CleanedDocument):
+    link: str
+    release_date: str
+    title: str
+
+    class Config:
+        name = "cleaned_papers"
+        category = DataCategory.PAPERS
         use_vector_index = False

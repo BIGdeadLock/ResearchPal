@@ -19,26 +19,25 @@ class UserDocument(NoSQLBaseDocument):
         return f"{self.first_name} {self.last_name}"
 
 
-class PaperDocument(NoSQLBaseDocument, ABC):
-    title: str
-    release_date: str
-    content: str
-    link: str
-
-    class Settings:
-        name = DataCategory.PAPERS
-
-
-class ArxivPaperDocument(PaperDocument):
-    categories: list[str]
-    journal: Optional[str]
-
-
 class Document(NoSQLBaseDocument, ABC):
     content: dict
     platform: str
-    author_id: UUID4 = Field(alias="author_id")
-    author_full_name: str = Field(alias="author_full_name")
+    requester_id: UUID4 = Field(alias="requester_id")
+    requester_full_name: str = Field(alias="requester_full_name")
+
+
+class PaperDocument(Document, ABC):
+    title: str
+    release_date: str
+    link: str
+    content: str
+    authors: str
+    categories: list[str]
+    journal: Optional[str]
+    platform: str = "arxiv"
+
+    class Settings:
+        name = DataCategory.PAPERS
 
 
 class RepositoryDocument(Document):

@@ -12,8 +12,8 @@ class EmbeddedChunk(VectorBaseDocument, ABC):
     embedding: list[float] | None
     platform: str
     document_id: UUID4
-    author_id: UUID4
-    author_full_name: str
+    requester_id: UUID4
+    requester_full_name: str
     metadata: dict = Field(default_factory=dict)
 
     @classmethod
@@ -54,4 +54,14 @@ class EmbeddedRepositoryChunk(EmbeddedChunk):
     class Config:
         name = "embedded_repositories"
         category = DataCategory.REPOSITORIES
+        use_vector_index = True
+
+
+class EmbeddedPaperChunk(EmbeddedChunk):
+    title: str
+    link: str
+
+    class Config:
+        name = "embedded_papers"
+        category = DataCategory.PAPERS
         use_vector_index = True

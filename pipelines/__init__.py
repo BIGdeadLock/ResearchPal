@@ -1,4 +1,4 @@
-from .digital_data_etl import digital_data_etl
+from .digital_data_etl import digital_data_etl, papers_digital_data_etl
 from .end_to_end_data import end_to_end_data
 from .evaluating import evaluating
 from .export_artifact_to_json import export_artifact_to_json
@@ -14,4 +14,5 @@ __all__ = [
     "digital_data_etl",
     "feature_engineering",
     "training",
+    "papers_digital_data_etl",
 ]

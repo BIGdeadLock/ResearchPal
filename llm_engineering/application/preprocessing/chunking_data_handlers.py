@@ -3,8 +3,9 @@ from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 from uuid import UUID
 
-from llm_engineering.domain.chunks import ArticleChunk, Chunk, PostChunk, RepositoryChunk
+from llm_engineering.domain.chunks import ArticleChunk, Chunk, PaperChunk, PostChunk, RepositoryChunk
 from llm_engineering.domain.cleaned_documents import (
+    CleanPaperDocument,
     CleanedArticleDocument,
     CleanedDocument,
     CleanedPostDocument,
@@ -128,6 +129,40 @@ class RepositoryChunkingHandler(ChunkingDataHandler):
                 document_id=data_model.id,
                 author_id=data_model.author_id,
                 author_full_name=data_model.author_full_name,
+                metadata=self.metadata,
+            )
+            data_models_list.append(model)
+
+        return data_models_list
+
+
+class PapersChunkingHandler(ChunkingDataHandler):
+    @property
+    def metadata(self) -> dict:
+        return {
+            "chunk_size": 1500,
+            "chunk_overlap": 0,
+        }
+
+    def chunk(self, data_model: CleanPaperDocument) -> list[PaperChunk]:
+        data_models_list = []
+
+        cleaned_content = data_model.content
+        chunks = chunk_text(
+            cleaned_content, chunk_size=self.metadata["chunk_size"], chunk_overlap=self.metadata["chunk_overlap"]
+        )
+
+        for chunk in chunks:
+            chunk_id = hashlib.md5(chunk.encode()).hexdigest()
+            model = PaperChunk(
+                id=UUID(chunk_id, version=4),
+                content=chunk,
+                platform=data_model.platform,
+                title=data_model.title,
+                link=data_model.link,
+                document_id=data_model.id,
+                requester_id=data_model.requester_id,
+                requester_full_name=data_model.requester_full_name,
                 metadata=self.metadata,
             )
             data_models_list.append(model)

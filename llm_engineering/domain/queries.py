@@ -1,4 +1,6 @@
-from pydantic import UUID4, Field
+from typing import Optional
+
+from pydantic import UUID4, BaseModel, Field
 
 from llm_engineering.domain.base import VectorBaseDocument
 from llm_engineering.domain.types import DataCategory
@@ -32,3 +34,11 @@ class EmbeddedQuery(Query):
 
     class Config:
         category = DataCategory.QUERIES
+
+
+class PaperQuery(BaseModel):
+    source: str = Field(description="Data source to fetch the papers from", default="arxiv")
+    query: str = Field(description="The query to look papers for")
+    release_date_filter: Optional[str] = Field(
+        description="Filter all papers released before this date. Date format: %Y-%m-%d", default=None
+    )

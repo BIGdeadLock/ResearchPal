@@ -6,12 +6,12 @@ from loguru import logger
 
 from llm_engineering import settings
 from pipelines import (
-    digital_data_etl,
     end_to_end_data,
     evaluating,
     export_artifact_to_json,
     feature_engineering,
     generate_datasets,
+    papers_digital_data_etl,
     training,
 )
 
@@ -71,7 +71,7 @@ Examples:
 )
 @click.option(
     "--etl-config-filename",
-    default="digital_data_etl_paul_iusztin.yaml",
+    default="digital_data_etl_eden_yavin.yaml",
     help="Filename of the ETL config file.",
 )
 @click.option(
@@ -114,7 +114,7 @@ def main(
     no_cache: bool = False,
     run_end_to_end_data: bool = False,
     run_etl: bool = False,
-    etl_config_filename: str = "digital_data_etl_paul_iusztin.yaml",
+    etl_config_filename: str = "digital_data_etl_eden_yavin.yaml",
     run_export_artifact_to_json: bool = False,
     run_feature_engineering: bool = False,
     run_generate_instruct_datasets: bool = False,
@@ -156,7 +156,7 @@ def main(
         pipeline_args["config_path"] = root_dir / "configs" / etl_config_filename
         assert pipeline_args["config_path"].exists(), f"Config file not found: {pipeline_args['config_path']}"
         pipeline_args["run_name"] = f"digital_data_etl_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
-        digital_data_etl.with_options(**pipeline_args)(**run_args_etl)
+        papers_digital_data_etl.with_options(**pipeline_args)(**run_args_etl)
 
     if run_export_artifact_to_json:
         run_args_etl = {}

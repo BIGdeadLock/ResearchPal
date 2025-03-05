@@ -5,29 +5,29 @@ from zenml import get_step_context, step
 
 from llm_engineering.application.retrievers.dispatcher import RetrieverDispatcher
 from llm_engineering.domain.documents import UserDocument
+from llm_engineering.domain.queries import PaperQuery
 
 
 @step
-def fetch_papers(user: UserDocument, queries: list[dict]) -> Annotated[list[str], "queries"]:
+def fetch_papers(user: UserDocument, papers_queries: list[PaperQuery]) -> Annotated[list[str], "queries"]:
     dispatcher = RetrieverDispatcher.build().register_arxiv()
 
-    logger.info(f"Starting to retrieve papers for {len(queries)} queries.")
+    logger.info(f"Starting to retrieve papers for {len(papers_queries)} queries.")
 
     metadata = {}
     successfull_retrieves = 0
     questions = []
-    for source_query in tqdm(queries):
-        source, query = source_query.popitem()
-        questions.append(query)
-        successfull_ret = _retrieve_papers(dispatcher, source, query, user)
+    for paper_query in tqdm(papers_queries):
+        questions.append(paper_query.query)
+        successfull_ret = _retrieve_papers(dispatcher, paper_query.source, paper_query.query, user)
         successfull_retrieves += successfull_ret
 
-        metadata = _add_to_metadata(metadata, source, successfull_ret)
+        metadata = _add_to_metadata(metadata, paper_query.source, successfull_ret)
 
     step_context = get_step_context()
-    step_context.add_output_metadata(output_name="fetch_papers", metadata=metadata)
+    step_context.add_output_metadata(output_name="queries", metadata=metadata)
 
-    logger.info(f"Successfully retrieved {successfull_retrieves} / {len(queries)} queries.")
+    logger.info(f"Successfully retrieved papers for {successfull_retrieves} / {len(papers_queries)} queries.")
 
     return questions
 
