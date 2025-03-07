@@ -26,15 +26,13 @@ class Document(NoSQLBaseDocument, ABC):
     requester_full_name: str = Field(alias="requester_full_name")
 
 
-class PaperDocument(Document, ABC):
+class PaperDocument(Document):
     title: str
     release_date: str
     link: str
     content: str
-    authors: str
-    categories: list[str]
-    journal: Optional[str]
     platform: str = "arxiv"
+    kw: Optional[dict] = None
 
     class Settings:
         name = DataCategory.PAPERS
@@ -58,6 +56,7 @@ class PostDocument(Document):
 
 class ArticleDocument(Document):
     link: str
+    kw: Optional[dict] = None
 
     class Settings:
         name = DataCategory.ARTICLES

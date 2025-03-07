@@ -120,6 +120,7 @@ Provide your response in JSON format.
                 max_tokens=2000 if cls.dataset_type == DatasetType.PREFERENCE else 1200,
                 temperature=0.7,
             )
+
         parser = ListPydanticOutputParser(pydantic_object=cls._get_dataset_sample_type())
 
         chain = llm | parser

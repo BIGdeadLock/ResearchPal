@@ -8,6 +8,10 @@ settings:
 parameters:
   user_full_name: Eden Yavin # [First Name(s)] [Last Name]
 
-  papers:
-    - source: arxiv
-      query: LLM agents in cybersecurity
+  interested:
+    - LLM
+    - cybersecurity
+    - agents
+
+
+

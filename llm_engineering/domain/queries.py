@@ -1,6 +1,4 @@
-from typing import Optional
-
-from pydantic import UUID4, BaseModel, Field
+from pydantic import UUID4, Field
 
 from llm_engineering.domain.base import VectorBaseDocument
 from llm_engineering.domain.types import DataCategory
@@ -8,8 +6,8 @@ from llm_engineering.domain.types import DataCategory
 
 class Query(VectorBaseDocument):
     content: str
-    author_id: UUID4 | None = None
-    author_full_name: str | None = None
+    requester_id: UUID4 | None = None
+    requester_full_name: str | None = None
     metadata: dict = Field(default_factory=dict)
 
     class Config:
@@ -19,6 +17,10 @@ class Query(VectorBaseDocument):
     def from_str(cls, query: str) -> "Query":
         return Query(content=query.strip("\n "))
 
+    @classmethod
+    def from_list(cls, keywords: list[str]) -> "Query":
+        return Query(content=", ".join(keywords))
+
     def replace_content(self, new_content: str) -> "Query":
         return Query(
             id=self.id,
@@ -26,6 +28,7 @@ class Query(VectorBaseDocument):
             author_id=self.author_id,
             author_full_name=self.author_full_name,
             metadata=self.metadata,
+            platform=self.platform,  # Preserve the platform
         )
 
 
@@ -34,11 +37,3 @@ class EmbeddedQuery(Query):
 
     class Config:
         category = DataCategory.QUERIES
-
-
-class PaperQuery(BaseModel):
-    source: str = Field(description="Data source to fetch the papers from", default="arxiv")
-    query: str = Field(description="The query to look papers for")
-    release_date_filter: Optional[str] = Field(
-        description="Filter all papers released before this date. Date format: %Y-%m-%d", default=None
-    )
