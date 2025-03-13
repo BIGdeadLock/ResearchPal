@@ -1,4 +1,4 @@
-from pydantic import UUID4, Field
+from pydantic import UUID4, BaseModel, Field
 
 from llm_engineering.domain.base import VectorBaseDocument
 from llm_engineering.domain.types import DataCategory
@@ -25,8 +25,8 @@ class Query(VectorBaseDocument):
         return Query(
             id=self.id,
             content=new_content,
-            author_id=self.author_id,
-            author_full_name=self.author_full_name,
+            requester_id=self.author_id,
+            requester_full_name=self.author_full_name,
             metadata=self.metadata,
             platform=self.platform,  # Preserve the platform
         )
@@ -37,3 +37,11 @@ class EmbeddedQuery(Query):
 
     class Config:
         category = DataCategory.QUERIES
+
+
+class CollectorQuery(BaseModel):
+    content: str
+    platform: str | None = None
+
+    def replace_content(self, new_content: str) -> "CollectorQuery":
+        return CollectorQuery(content=new_content, platform=self.platform)

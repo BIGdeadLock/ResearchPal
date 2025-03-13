@@ -13,5 +13,8 @@ parameters:
     - cybersecurity
     - agents
 
+  platforms:
+    - arxiv
+    - github
 
 

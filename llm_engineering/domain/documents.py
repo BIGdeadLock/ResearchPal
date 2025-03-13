@@ -22,6 +22,8 @@ class UserDocument(NoSQLBaseDocument):
 class Document(NoSQLBaseDocument, ABC):
     content: dict
     platform: str
+    link: str
+    user_feedback: int | None = None
     requester_id: UUID4 = Field(alias="requester_id")
     requester_full_name: str = Field(alias="requester_full_name")
 
@@ -29,9 +31,6 @@ class Document(NoSQLBaseDocument, ABC):
 class PaperDocument(Document):
     title: str
     release_date: str
-    link: str
-    content: str
-    platform: str = "arxiv"
     kw: Optional[dict] = None
 
     class Settings:
@@ -39,16 +38,12 @@ class PaperDocument(Document):
 
 
 class RepositoryDocument(Document):
-    name: str
-    link: str
-
     class Settings:
         name = DataCategory.REPOSITORIES
 
 
 class PostDocument(Document):
     image: Optional[str] = None
-    link: str | None = None
 
     class Settings:
         name = DataCategory.POSTS

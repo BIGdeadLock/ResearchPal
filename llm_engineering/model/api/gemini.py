@@ -4,12 +4,13 @@ from llm_engineering.settings import settings
 
 
 class Gemini:
-    def __init__(self):
+    def __init__(self, model_id=settings.GEMINI_MODEL_ID):
         self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        self.model_id = model_id
 
     def generate(self, query: str, schema=None):
         args = dict(
-            model=settings.GEMINI_MODEL_ID,
+            model=self.model_id,
             contents=query,
         )
         if schema:

@@ -1,23 +1,14 @@
-from langchain.prompts import PromptTemplate
-
 from .base import PromptTemplateFactory
 
 
 class QueryBuilderPromptTemplate(PromptTemplateFactory):
-    prompt: str = """You are an AI language model assistant. Your task is to generate {number_of_queries} different versions for a blog query based
-    on the user fields of interest. Those queries will be used to search for blogs posts on those topics. Each query can focus on different domains or only on specific fields
-    but they have to be different. The output should be a JSON list where each item in the list is a query you generated.
+    prompt: str = """You are an AI language model assistant. Your task is to generate a query based
+    on the user fields of interest to search for related {platform}.
     Fields of Interest: {fields}
-    Queries:
     """
 
-    def create_template(self, number_of_queries: int) -> PromptTemplate:
-        return PromptTemplate(
-            template=self.prompt, input_variables=["fields"], partial_variables={"number_of_queries": number_of_queries}
-        )
-
-    def get_str_prompt(self, fields: str, number_of_queries: int) -> str:
-        return self.prompt.format(number_of_queries=number_of_queries, fields=fields).replace("\n", "")
+    def create_template(self, fields: str, platform: str) -> str:
+        return self.prompt.format(platform=platform, fields=fields).replace("\n", "")
 
 
 class QueryExpansionTemplate(PromptTemplateFactory):
@@ -32,15 +23,8 @@ class QueryExpansionTemplate(PromptTemplateFactory):
     def separator(self) -> str:
         return "#next-question#"
 
-    def create_template(self, expand_to_n: int) -> PromptTemplate:
-        return PromptTemplate(
-            template=self.prompt,
-            input_variables=["question"],
-            partial_variables={
-                "separator": self.separator,
-                "expand_to_n": expand_to_n,
-            },
-        )
+    def create_template(self, question, seperator: str, expand_to_n: int) -> str:
+        return self.prompt.format(question=question, separator=seperator, expand_to_n=expand_to_n)
 
 
 class SelfQueryTemplate(PromptTemplateFactory):
@@ -67,5 +51,5 @@ class SelfQueryTemplate(PromptTemplateFactory):
     
     User question: {question}"""
 
-    def create_template(self) -> PromptTemplate:
-        return PromptTemplate(template=self.prompt, input_variables=["question"])
+    def create_template(self, question: str) -> str:
+        return self.prompt.format(question=self.question)

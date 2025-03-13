@@ -1,7 +1,6 @@
 from zenml import pipeline
 
-from llm_engineering.domain.queries import PaperQuery
-from steps.etl import crawl_links, fetch_papers, get_or_create_user
+from steps.etl import collect_documents, crawl_links, get_or_create_user
 
 
 @pipeline
@@ -12,8 +11,7 @@ def digital_data_etl(user_full_name: str, links: list[str]) -> str:
 
 
 @pipeline
-def papers_digital_data_etl(user_full_name: str, papers: list[dict]) -> str:
+def data_collection(user_full_name: str, fields: list[str], platforms: list[str]) -> str:
     user_full_name = get_or_create_user(user_full_name)
-    papers = [PaperQuery(source=p["source"], query=p["query"]) for p in papers]
-    last_step = fetch_papers(user=user_full_name, papers_queries=papers)
+    last_step = collect_documents(user=user_full_name, field_of_interest=fields, platforms=platforms)
     return last_step.invocation_id

@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str | None = None
     OPENAI_URL: str | None = None
 
+    # WEB SEARCH
+    TAVILY_API_KEY: str | None = None
+
     # Google API
     GEMINI_MODEL_ID: str = "gemini-2.0-flash-lite"
     GEMINI_API_KEY: str | None = None
