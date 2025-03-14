@@ -20,7 +20,7 @@ class UserDocument(NoSQLBaseDocument):
 
 
 class Document(NoSQLBaseDocument, ABC):
-    content: dict
+    content: str
     platform: str
     link: str
     user_feedback: int | None = None

@@ -6,12 +6,12 @@ from loguru import logger
 
 from llm_engineering import settings
 from pipelines import (
+    digital_data_etl,
     end_to_end_data,
     evaluating,
     export_artifact_to_json,
     feature_engineering,
     generate_datasets,
-    papers_digital_data_etl,
     training,
 )
 
@@ -156,7 +156,7 @@ def main(
         pipeline_args["config_path"] = root_dir / "configs" / etl_config_filename
         assert pipeline_args["config_path"].exists(), f"Config file not found: {pipeline_args['config_path']}"
         pipeline_args["run_name"] = f"digital_data_etl_run_{dt.now().strftime('%Y_%m_%d_%H_%M_%S')}"
-        papers_digital_data_etl.with_options(**pipeline_args)(**run_args_etl)
+        digital_data_etl.with_options(**pipeline_args)(**run_args_etl)
 
     if run_export_artifact_to_json:
         run_args_etl = {}

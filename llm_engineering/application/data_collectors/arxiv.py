@@ -1,28 +1,28 @@
-from arxiv import Client, Search
+from arxiv import Client, Search, SortCriterion
 from loguru import logger
 
 from llm_engineering.domain.documents import PaperDocument, UserDocument
 from llm_engineering.domain.queries import CollectorQuery
+from llm_engineering.settings import settings
 
 from .base import BaseCollector
-from .constants import DEFAULT_TOP_K_PAPERS, TOP_K_PAPERS_TOKEN, USER_TOKEN
+from .constants import USER_TOKEN
 
 
 class ArxivCollector(BaseCollector):
     model = PaperDocument
     platform = "arxiv"
 
-    def __init__(self) -> None:
+    def __init__(self, mock=False) -> None:
         super().__init__()
+        self._mock = mock
 
     def collect(self, query: CollectorQuery, **kwargs) -> None:
-        top_k_papers = kwargs.get(TOP_K_PAPERS_TOKEN, DEFAULT_TOP_K_PAPERS)
         user: UserDocument = kwargs[USER_TOKEN]
         logger.info(f"Starting retrieving papers for query: {query}")
 
         search = Search(
-            query=query.content,
-            max_results=top_k_papers,
+            query=query.content, max_results=settings.DATA_SOURCE_MAX_RESULTS, sort_by=SortCriterion.SubmittedDate
         )
 
         for paper in Client().results(search):
@@ -38,4 +38,4 @@ class ArxivCollector(BaseCollector):
 
             instance.save()
 
-        logger.info(f"Finished retrieving {top_k_papers} papers")
+        logger.info(f"Finished retrieving {settings.DATA_SOURCE_MAX_RESULTS} papers")

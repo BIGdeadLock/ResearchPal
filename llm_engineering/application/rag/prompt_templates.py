@@ -2,9 +2,17 @@ from .base import PromptTemplateFactory
 
 
 class QueryBuilderPromptTemplate(PromptTemplateFactory):
-    prompt: str = """You are an AI language model assistant. Your task is to generate a query based
-    on the user fields of interest to search for related {platform}.
+    prompt: str = """
+    You are an AI language model assistant. 
+    ## Task: Your task is to generate a query based on the user fields of interest to search for related {platform}.
     Fields of Interest: {fields}
+    
+    ## Constraints:
+    - Make it concise.
+    - Use the platform in the query.
+    - Output ONLY the query and nothing more!
+        
+    Query:
     """
 
     def create_template(self, fields: str, platform: str) -> str:

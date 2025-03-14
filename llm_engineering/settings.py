@@ -76,6 +76,9 @@ class Settings(BaseSettings):
     LINKEDIN_USERNAME: str | None = None
     LINKEDIN_PASSWORD: str | None = None
 
+    # DATA COLLECTION
+    DATA_SOURCE_MAX_RESULTS: int = 3
+
     @property
     def OPENAI_MAX_TOKEN_WINDOW(self) -> int:
         official_max_token_window = {

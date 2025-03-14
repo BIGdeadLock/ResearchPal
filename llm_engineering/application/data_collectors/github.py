@@ -1,15 +1,14 @@
 from gitingest import ingest
 from loguru import logger
-from tavily import TavilyClient
 
 from llm_engineering.application.utils.misc import get_num_tokens
 from llm_engineering.domain.documents import RepositoryDocument
 from llm_engineering.domain.queries import CollectorQuery
 from llm_engineering.model.api.gemini import Gemini
-from llm_engineering.settings import settings
 
 from .base import BaseCollector
-from .constants import MAX_RESULTS, MAX_TOKENS_ALLOWED
+from .constants import MAX_TOKENS_ALLOWED, TAVILIY_GITHUB_MOCK_RESULTS
+from .web import TaviliyAdapter
 
 
 class GithubCollector(BaseCollector):
@@ -22,40 +21,18 @@ class GithubCollector(BaseCollector):
         self._mock = mock
 
     def collect(self, query: CollectorQuery, **kwargs) -> None:
-        logger.info(f"Searching online for github repositories that matches the query: {query}")
+        logger.info(f"Searching online for github repositories that matches the query: {query.content}")
         if kwargs.get("mock", False):
-            result = {
-                "results": [
-                    {
-                        "content": "612 stars 60 forks Branches Tags Activity Assessing Cybersecurity Vulnerabilities in Code Large Language Models | arXiv | 202...Paper Link Generative AI and Large Language Models for Cyber Security: All Insights You Need | arXiv | 2024.05.21 | Paper Link",
-                        "raw_content": None,
-                        "score": 0.5689194,
-                        "title": "When LLMs Meet Cybersecurity: A Systematic Literature Review - GitHub",
-                        "url": "https://github.com/tmylla/Awesome-LLM4Cybersecurity",
-                    },
-                    {
-                        "content": "Borrowing a concept from the cybersecurity world, we believe that to truly mitigate the challenges which generative AI presen...ties, is a collaborative approach to evaluating and mitigating potential risks and the same ethos applies to generative AI and",
-                        "raw_content": None,
-                        "score": 0.5027105,
-                        "title": "GitHub - meta-llama/PurpleLlama: Set of tools to assess and improve LLM ...",
-                        "url": "https://github.com/meta-llama/PurpleLlama",
-                    },
-                    {
-                        "content": "Awesome Large Language Model Tools for Cybersecurity Research Reverse Engineering G-3PO: A Protocol Droid for Ghidra : An AI ...er at Tenable for analysing and annotating decompiled code in Ghidra, which queries OpenAI and/or Anthropic's language models.",
-                        "raw_content": None,
-                        "score": 0.49040702,
-                        "title": "GitHub - tenable/awesome-llm-cybersecurity-tools: A curated list of ...",
-                        "url": "https://github.com/tenable/awesome-llm-cybersecurity-tools",
-                    },
-                ]
-            }
+            documents = TAVILIY_GITHUB_MOCK_RESULTS
         else:
-            result = TavilyClient(api_key=settings.TAVILY_API_KEY).search(query.content, max_results=MAX_RESULTS)
-
-        documents = result["results"]
+            documents = TaviliyAdapter().search(query.content)
 
         for document in documents:
-            link = document["url"]
+            link = document.link
+
+            if "github" not in link:
+                logger.warning(f"Found non github link: {link}, Skipping")
+                continue
 
             old_model = self.model.find(link=link)
             if old_model is not None:
@@ -71,6 +48,9 @@ class GithubCollector(BaseCollector):
 
             # Create a small summary for the readme if it is above 500 tokens
             if get_num_tokens(readme) > MAX_TOKENS_ALLOWED:
+                logger.warning(
+                    f"Github README has {get_num_tokens(readme)}," f" summarizing it to {MAX_TOKENS_ALLOWED} tokens"
+                )
                 readme = Gemini().generate(query=f"Create a concise summary for the following: {readme}")
 
             user = kwargs["user"]
