@@ -1,5 +1,6 @@
 import uuid
 from abc import ABC
+from datetime import datetime
 from typing import Generic, Type, TypeVar
 
 from loguru import logger
@@ -18,6 +19,7 @@ T = TypeVar("T", bound="NoSQLBaseDocument")
 
 class NoSQLBaseDocument(BaseModel, Generic[T], ABC):
     id: UUID4 = Field(default_factory=uuid.uuid4)
+    last_update: str = Field(default=datetime.now().strftime("%Y-%m-%d"))
 
     def __eq__(self, value: object) -> bool:
         if not isinstance(value, self.__class__):

@@ -60,7 +60,12 @@ class GithubCollector(BaseCollector):
                 platform="github",
                 requester_id=user.id,
                 requester_full_name=user.full_name,
+                title=link.split("/")[-1],
             )
+
+            # if instance.find(link=link) is not None:
             instance.save()
+            # else:
+            #     logger.info(f"Repo {link} is already in the database")
 
             logger.info(f"Finished scrapping GitHub repository: {link}")

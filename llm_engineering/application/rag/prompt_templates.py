@@ -10,6 +10,7 @@ class QueryBuilderPromptTemplate(PromptTemplateFactory):
     ## Constraints:
     - Make it concise.
     - Use the platform in the query.
+    - In case the platform is arxiv, just return a short query from the fields. For example: llm agents cybersecurity
     - Output ONLY the query and nothing more!
         
     Query:

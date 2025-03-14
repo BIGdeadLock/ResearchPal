@@ -21,6 +21,7 @@ class UserDocument(NoSQLBaseDocument):
 
 class Document(NoSQLBaseDocument, ABC):
     content: str
+    title: str
     platform: str
     link: str
     user_feedback: int | None = None
@@ -29,9 +30,7 @@ class Document(NoSQLBaseDocument, ABC):
 
 
 class PaperDocument(Document):
-    title: str
     release_date: str
-    kw: Optional[dict] = None
 
     class Settings:
         name = DataCategory.PAPERS

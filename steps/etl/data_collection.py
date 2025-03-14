@@ -13,7 +13,7 @@ from llm_engineering.domain.queries import CollectorQuery
 def collect_documents(
     user: UserDocument, field_of_interest: list[str], platforms: list[str]
 ) -> Annotated[list[str], "queries"]:
-    dispatcher = DataCollectorDispatcher.build().register_arxiv().register_github()
+    dispatcher = DataCollectorDispatcher.build().register_arxiv()  # .register_github()
 
     logger.info(f"Starting to retrieve documents for {len(field_of_interest)} field of interest.")
 
@@ -41,6 +41,9 @@ def _collect_document(
     dispatcher: DataCollectorDispatcher, fields: list[str], platform: str, user: UserDocument
 ) -> bool:
     collector = dispatcher.get_collector(platform)
+    if collector is None:
+        return False
+
     query_builder = QueryBuilder()
     query = CollectorQuery(content=str(fields), platform=platform)
     query = query_builder.generate(query)

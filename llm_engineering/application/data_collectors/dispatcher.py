@@ -1,6 +1,5 @@
 from loguru import logger
 
-from .article import ArticleCollector
 from .arxiv import ArxivCollector
 from .base import BaseCollector
 from .github import GithubCollector
@@ -39,4 +38,4 @@ class DataCollectorDispatcher:
         else:
             logger.warning(f"No collector found for {platform}. Defaulting to ArticleCollector.")
 
-            return ArticleCollector()
+            return None

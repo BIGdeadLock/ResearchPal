@@ -1,4 +1,4 @@
-from arxiv import Client, Search, SortCriterion
+from arxiv import Client, Search
 from loguru import logger
 
 from llm_engineering.domain.documents import PaperDocument, UserDocument
@@ -19,12 +19,14 @@ class ArxivCollector(BaseCollector):
 
     def collect(self, query: CollectorQuery, **kwargs) -> None:
         user: UserDocument = kwargs[USER_TOKEN]
-        logger.info(f"Starting retrieving papers for query: {query}")
+        logger.info(f"Starting retrieving papers for query: {query.content}")
 
         search = Search(
-            query=query.content, max_results=settings.DATA_SOURCE_MAX_RESULTS, sort_by=SortCriterion.SubmittedDate
+            query=query.content.strip(),
+            max_results=settings.DATA_SOURCE_MAX_RESULTS,
         )
 
+        count = 0
         for paper in Client().results(search):
             instance = self.model(
                 content=paper.summary,
@@ -36,6 +38,10 @@ class ArxivCollector(BaseCollector):
                 requester_full_name=user.full_name,
             )
 
+            # if instance.find(link=paper.pdf_url) is not None:
             instance.save()
+            count += 1
+            # else:
+            #     logger.info(f"Paper {paper.title} is already in the database")
 
-        logger.info(f"Finished retrieving {settings.DATA_SOURCE_MAX_RESULTS} papers")
+        logger.info(f"Finished retrieving {count} papers")
