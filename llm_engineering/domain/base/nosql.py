@@ -77,6 +77,19 @@ class NoSQLBaseDocument(BaseModel, Generic[T], ABC):
 
             return None
 
+    def update_field(self, field_name: str, new_value) -> bool:
+        collection = _database[self.get_collection_name()]
+        try:
+            # Update the specific field in the document
+            result = collection.update_one(
+                {"_id": str(self.id)},  # Find the document by its ID
+                {"$set": {field_name: new_value}},  # Set the new value for the specified field
+            )
+            return result.modified_count > 0  # Return True if the document was updated
+        except errors.OperationFailure:
+            logger.error(f"Failed to update field '{field_name}' for document with ID: {self.id}")
+            return False
+
     @classmethod
     def get_or_create(cls: Type[T], **filter_options) -> T:
         collection = _database[cls.get_collection_name()]

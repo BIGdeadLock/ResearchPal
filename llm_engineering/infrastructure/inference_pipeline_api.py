@@ -1,9 +1,11 @@
 import opik
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from opik import opik_context
 from pydantic import BaseModel
 
 from llm_engineering import settings
+from llm_engineering.application.feedback.update import update_feedback
 from llm_engineering.application.rag.retriever import ContextRetriever
 from llm_engineering.application.utils import misc
 from llm_engineering.domain.embedded_chunks import EmbeddedChunk
@@ -13,10 +15,24 @@ from llm_engineering.model.inference import InferenceExecutor, LLMInferenceSagem
 configure_opik()
 
 app = FastAPI()
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class QueryRequest(BaseModel):
     query: str
+
+
+class FeedbackQuery(BaseModel):
+    feedback: int
+    platform: str
+    link: str
 
 
 class QueryResponse(BaseModel):
@@ -62,5 +78,14 @@ async def rag_endpoint(request: QueryRequest):
         answer = rag(query=request.query)
 
         return {"answer": answer}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
+
+@app.post("/feedback")
+async def feedback_endpoint(request: FeedbackQuery):
+    try:
+        response = update_feedback(request.feedback, request.link, request.platform)
+        return response
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
